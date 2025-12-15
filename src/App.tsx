@@ -5,10 +5,11 @@ import {AdvancedCounter} from './components/AdvancedCounter'
 function App() {
 
   return (
-    <>
+    <div className='container'>
     <h2>Counter</h2>
      <AdvancedCounter />
-    </>
+    
+    </div>
   )
 }
 
