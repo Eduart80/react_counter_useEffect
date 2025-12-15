@@ -1,73 +1,42 @@
-# React + TypeScript + Vite
+# React Counter useEffect
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+React + TypeScript + Vite
 
-Currently, two official plugins are available:
+This counter app include the functionalities like:
+- Increment by 1
+- Decrement by 1
+- Reset Mechanism 
+- Keyboard Listeners for up and down
+- Input values, increment/decrement will be based on the number user inputs.
+- Counting or Log counting will be shown on the bottom
+- The data is saved on localstorage<br>
+ Counting can go only on positive direction, no count goes less than 0 (zero)
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## Use of hooks.
+useState. I use this option to store data for counting number, in combination with value.
+Value is the option where user input selected number of choice.
+Log is used to store the count and display it on UI,
+and lastly Loadding is used to show message when localStorage is saving the data.
 
-## React Compiler
+UseEffect.
+I used this to monitor the [count] dependency, after data changes this hook will run the code again.
+It include save to localStorage, [ if( // ) ] statement to show or hide the message "Saving to LocalStorage...".
+Inside this, i used a timer to slow the procec for 5 sec, in order for the message to be able to be seen.
+Inside this setTimer i change the state of the message and at the end, cleanup  proccess of timer with return clearTimeout().
+```js 
+ useEffect(() => {
+        localStorage.setItem('counting', JSON.stringify(count))
+        if (count !== 0) {
+            setLoadding(true)
+            setLog(prevLog => [...prevLog, count])
 
-The React Compiler is currently not compatible with SWC. See [this issue](https://github.com/vitejs/vite-plugin-react/issues/428) for tracking the progress.
+            const timer = setTimeout(() => {
+                setLoadding(false);
+            }, 100)
 
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
-
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
-
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+            return () => clearTimeout(timer)
+        } else {
+            setLoadding(false)
+        }
+    }, [count]);
 ```
