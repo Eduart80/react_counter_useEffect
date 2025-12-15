@@ -1,34 +1,47 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect,useRef, useState } from 'react'
 
 export const AdvancedCounter = ()=> {
     const [count, setCount]=useState<number>(0)
     const [value, setValue]=useState<number>(1)
+    const [log, setLog] = useState<number[]>([])
+    const [loadding, setLoadding ] = useState<boolean>(false)
     
-    useEffect(()=>{
+
+    useEffect(() => {
         localStorage.setItem('counting', JSON.stringify(count))
-    },[count])
+        if (count !== 0) {
+            setLoadding(true)
+            setLog(prevLog => [...prevLog, count])
+
+            const timer = setTimeout(() => {
+                setLoadding(false);
+            }, 100)
+
+            return () => clearTimeout(timer)
+        } else {
+            setLoadding(false)
+        }
+    }, [count]);
+
+    
 
         function decrise () {
             if(count > 0 ){
-                let res
                 setCount(prevCount => {
-                    res = prevCount - value
-                    return res
+                    return prevCount - value
                 });
-                // localStorage.setItem('counting', JSON.stringify(res || 0))
+               
             }
         }
         function incrise () {
-            let res
             setCount(prevCount => {
-                res = prevCount + value
-               return res
+               return prevCount + value
             })
-            //  localStorage.setItem('counting', JSON.stringify(res))
         }
         function resetAll(){
             setCount(0)
             setValue(1)
+            setLog([]);
         }
         function stepVal(e: React.ChangeEvent<HTMLInputElement>) {
             const userVal = Number(e.target.value);
@@ -42,7 +55,6 @@ export const AdvancedCounter = ()=> {
                 decrise();
             }
         }
-      
 
     return (
         <div tabIndex={0} onKeyDown={handleKeyDown} style={{outline: 'none'}}>
@@ -61,8 +73,19 @@ export const AdvancedCounter = ()=> {
                     style={{width:'50px'}}
                 />
             </div>
-             <h5>Changes </h5>
-            <p>localHost</p>
+            {loadding ? (
+                <p>Saving to LocalStorage...</p>
+            ) : (
+                <p>Changes saved:</p>
+            )}
+            <p style={{textAlign:'left', marginBottom:'3px'}}>Count history:</p>
+            <hr style={{marginTop:'0'}}/>
+            <ul >
+                {log.map((item, idx) => (
+                    <li key={idx} style={{listStyle:'none', textAlign:'left',
+                         maxHeight:'300px'}}>{item}</li>
+                ))}
+            </ul>
         </div>
     )
 }
